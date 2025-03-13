@@ -5,6 +5,10 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import com.example.calculatorapp.service.JwtTokenService
+import org.springframework.web.bind.annotation.*
+import org.springframework.security.core.Authentication
 
 @RestController
 @RequestMapping("/api/calculator")
@@ -13,8 +17,9 @@ class CalculatorController {
     @Autowired
     private lateinit var calculationRepository: CalculationRepository
 
+    // Получаем имя пользователя из аутентификации
     @GetMapping("/add")
-    fun add(@RequestParam(value = "num1") num1: Double, @RequestParam(value = "num2") num2: Double): Double {
+    fun add(@AuthenticationPrincipal user: String?, @RequestParam(value = "num1") num1: Double, @RequestParam(value = "num2") num2: Double): Double {
         val result = num1 + num2
         // Сохраняем в базе данных
         calculationRepository.save(Calculation(num1 = num1, num2 = num2, operation = "add", result = result))
@@ -22,7 +27,7 @@ class CalculatorController {
     }
 
     @GetMapping("/subtract")
-    fun subtract(@RequestParam(value = "num1") num1: Double, @RequestParam(value = "num2") num2: Double): Double {
+    fun subtract(@AuthenticationPrincipal user: String?, @RequestParam(value = "num1") num1: Double, @RequestParam(value = "num2") num2: Double): Double {
         val result = num1 - num2
         // Сохраняем в базе данных
         calculationRepository.save(Calculation(num1 = num1, num2 = num2, operation = "subtract", result = result))
@@ -30,7 +35,7 @@ class CalculatorController {
     }
 
     @GetMapping("/multiply")
-    fun multiply(@RequestParam(value = "num1") num1: Double, @RequestParam(value = "num2") num2: Double): Double {
+    fun multiply(@AuthenticationPrincipal user: String?, @RequestParam(value = "num1") num1: Double, @RequestParam(value = "num2") num2: Double): Double {
         val result = num1 * num2
         // Сохраняем в базе данных
         calculationRepository.save(Calculation(num1 = num1, num2 = num2, operation = "multiply", result = result))
@@ -38,7 +43,7 @@ class CalculatorController {
     }
 
     @GetMapping("/divide")
-    fun divide(@RequestParam(value = "num1") num1: Double, @RequestParam(value = "num2") num2: Double): Double {
+    fun divide(@AuthenticationPrincipal user: String?, @RequestParam(value = "num1") num1: Double, @RequestParam(value = "num2") num2: Double): Double {
         if (num2 == 0.0) {
             throw ArithmeticException("Cannot divide by zero")
         }
